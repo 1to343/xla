@@ -682,11 +682,13 @@ function renderSpark(){
 }
 function renderBatches(){
   const edit=canEdit('batches');
+  // самолечение: готовая партия всегда «Завершена»
+  data.batches.forEach(b=>{ if(b.stage==='Готово'&&b.status!=='Завершена') b.status='Завершена'; });
   document.getElementById('t-batches').innerHTML=data.batches.map((b,i)=>{
-    const done=b.stage==='Готово';
+    const done=b.stage==='Готово'||b.status==='Завершена';
     const act=edit?`<td><div class="stepbtns">
       <button class="iconbtn" onclick="nextStage(${i})" ${done?'disabled':''}>▶ этап</button>
-      <button class="iconbtn" onclick="toggleStop(${i})">${b.status==='Остановлена'?'▶ пуск':'⏸ стоп'}</button></div></td>`:'';
+      <button class="iconbtn" onclick="toggleStop(${i})" ${done?'disabled':''}>${b.status==='Остановлена'?'▶ пуск':'⏸ стоп'}</button></div></td>`:'';
     return `<tr><td><b>${b.id}</b></td><td>${b.chip}</td><td>${b.wafers}</td><td>${b.stage}</td><td>${statusTag(b.status)}</td><td>${b.date}</td>${edit?act:''}</tr>`;
   }).join('');
 }
@@ -787,6 +789,7 @@ function nextStage(i){
 }
 function toggleStop(i){
   const b=data.batches[i];
+  if(b.stage==='Готово'||b.status==='Завершена') return; // завершённую партию не останавливаем
   if(b.status==='Остановлена'){b.status='В работе';log(`возобновил партию ${b.id}`);}
   else{b.status='Остановлена';log(`остановил партию ${b.id}`);}
   renderAll();
