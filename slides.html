@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КРИСТАЛЛ — презентация проекта</title>
+<style>
+  :root{
+    --blue:#1E6FE0;--teal:#22C7C7;--dark:#0E1726;--text:#eaf1fc;--muted:#9fb0cc;
+    --line:#243a63;--green:#2ecc71;--amber:#f5b942;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 70% -10%,#16315c,#0b1322 60%);
+    color:var(--text);overflow:hidden;
+  }
+  .slide{
+    position:absolute;inset:0;display:none;
+    flex-direction:column;justify-content:center;
+    padding:6vh 9vw;
+  }
+  .slide.active{display:flex;animation:fade .35s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+  .kicker{color:var(--teal);font-size:clamp(14px,1.6vw,20px);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:clamp(32px,6vw,76px);line-height:1.05;margin-bottom:18px}
+  h2{font-size:clamp(26px,4.2vw,52px);line-height:1.1;margin-bottom:26px}
+  p,li{font-size:clamp(17px,2.3vw,28px);line-height:1.5;color:var(--text)}
+  .muted{color:var(--muted)}
+  ul{list-style:none;display:flex;flex-direction:column;gap:14px;margin-top:10px}
+  li{display:flex;gap:14px;align-items:flex-start}
+  li::before{content:"▸";color:var(--teal);font-weight:700;flex-shrink:0}
+  .big{font-size:clamp(22px,3vw,38px);font-weight:600}
+  .logo{font-size:clamp(60px,10vw,120px);margin-bottom:10px}
+  .center{align-items:center;text-align:center}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:10px}
+  .box{background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:16px;padding:22px}
+  .box h3{font-size:clamp(18px,2.4vw,28px);margin-bottom:12px;color:var(--teal)}
+  .box p,.box li{font-size:clamp(15px,1.9vw,22px)}
+  .modules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:14px}
+  .mod{background:rgba(30,111,224,.12);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:clamp(15px,1.9vw,22px)}
+  .mod b{display:block;color:var(--teal);margin-bottom:4px;font-size:clamp(16px,2vw,24px)}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:20px;font-size:clamp(16px,2.2vw,28px)}
+  .flow span{background:rgba(34,199,199,.14);border:1px solid var(--line);border-radius:30px;padding:10px 18px}
+  .flow .arr{color:var(--teal);background:none;border:none;padding:0 2px}
+  .stat{display:flex;gap:40px;flex-wrap:wrap;margin-top:20px}
+  .stat .num{font-size:clamp(34px,5vw,64px);font-weight:800;color:var(--teal)}
+  .stat .cap{font-size:clamp(14px,1.8vw,20px);color:var(--muted)}
+  /* навигация */
+  .nav{position:fixed;bottom:20px;right:24px;display:flex;align-items:center;gap:14px;z-index:5}
+  .nav button{
+    background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--text);
+    width:46px;height:46px;border-radius:50%;font-size:20px;cursor:pointer;transition:.15s;
+  }
+  .nav button:hover{background:var(--blue)}
+  .counter{position:fixed;bottom:28px;left:24px;color:var(--muted);font-size:14px;z-index:5}
+  .progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--teal),var(--blue));z-index:6;transition:width .3s}
+  .hint{position:fixed;top:14px;right:20px;color:var(--muted);font-size:12px;z-index:5}
+</style>
+</head>
+<body>
+
+<div class="progress" id="prog"></div>
+<div class="hint">← → листать слайды</div>
+
+<!-- 1 Титульный -->
+<section class="slide active center">
+  <div class="logo">🔷</div>
+  <div class="kicker">Концепция российской MES/ERP-системы</div>
+  <h1>КРИСТАЛЛ</h1>
+  <p class="big">Система управления производством микрочипов</p>
+  <p class="muted" style="margin-top:18px">«Каждый кристалл под контролем»</p>
+  <p class="muted" style="margin-top:28px">Команда из 5 человек · 8 класс · 4 дня</p>
+</section>
+
+<!-- 2 Проблема -->
+<section class="slide">
+  <div class="kicker">Проблема</div>
+  <h2>Обычные системы не знают, что такое чип</h2>
+  <ul>
+    <li>В России много ERP/MES-систем, но они <b>универсальные</b> — «для любого завода».</li>
+    <li>Производству чипов нужны особые функции, которых в них нет.</li>
+    <li>Раньше это закрывали иностранные системы — они <b>ушли</b> с рынка.</li>
+  </ul>
+</section>
+
+<!-- 3 Почему важно -->
+<section class="slide">
+  <div class="kicker">Почему это важно для России</div>
+  <h2>Чипы — мозг всей техники</h2>
+  <ul>
+    <li>Телефоны, машины, банковские карты, медицина, оборона — везде микрочипы.</li>
+    <li>Стране важно производить их <b>самой</b>, а не зависеть от других.</li>
+    <li>Идёт импортозамещение — заводам нужны отечественные системы управления.</li>
+  </ul>
+</section>
+
+<!-- 4 Что есть / чего не хватает -->
+<section class="slide">
+  <div class="kicker">Что есть и чего не хватает</div>
+  <h2>Системы есть — специализации нет</h2>
+  <div class="cols">
+    <div class="box">
+      <h3>✅ Уже есть</h3>
+      <ul>
+        <li>ERP: 1С:ERP, Галактика, ТУРБО ERP</li>
+        <li>MES: 1С:MES, TALARIX, Малахит</li>
+        <li>200+ систем ERP в реестре ПО</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>❌ Чего не хватает</h3>
+      <ul>
+        <li>учёта пластин (wafer) и партий</li>
+        <li>рецептов техпроцессов</li>
+        <li>контроля выхода годных (yield)</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5 Цель -->
+<section class="slide center">
+  <div class="kicker">Цель проекта</div>
+  <h2 style="max-width:18ch">Создать концепцию и прототип специализированной системы для микрочипов</h2>
+  <p class="muted">…и показать, чем она лучше универсальных.</p>
+</section>
+
+<!-- 6 Архитектура -->
+<section class="slide">
+  <div class="kicker">Архитектура</div>
+  <h2>6 модулей системы КРИСТАЛЛ</h2>
+  <div class="modules">
+    <div class="mod"><b>Партии пластин</b>история каждой партии</div>
+    <div class="mod"><b>Планирование</b>заказы → план</div>
+    <div class="mod"><b>Рецепты</b>точные параметры шагов</div>
+    <div class="mod"><b>Контроль качества</b>выход годных, дефекты</div>
+    <div class="mod"><b>Склад</b>материалы и остатки</div>
+    <div class="mod"><b>Отчёты</b>дашборды для руководства</div>
+  </div>
+  <div class="flow">
+    <span>Заказ</span><span class="arr">→</span>
+    <span>План</span><span class="arr">→</span>
+    <span>Производство</span><span class="arr">→</span>
+    <span>Контроль</span><span class="arr">→</span>
+    <span>Отчёт</span>
+  </div>
+</section>
+
+<!-- 7 Прототип 1 -->
+<section class="slide">
+  <div class="kicker">Прототип · часть 1</div>
+  <h2>Дашборд и партии пластин</h2>
+  <ul>
+    <li>Карточки: заказы в работе, партии, средний выход годных, загрузка оборудования.</li>
+    <li>График выхода годных строится <b>по реальным данным</b> прототипа.</li>
+    <li>Таблица партий: этап, статус, дата запуска каждой партии.</li>
+  </ul>
+  <p class="muted" style="margin-top:20px">Открывается в браузере без интернета — файл index.html</p>
+</section>
+
+<!-- 8 Прототип 2 -->
+<section class="slide">
+  <div class="kicker">Прототип · часть 2</div>
+  <h2>Контроль качества и склад</h2>
+  <ul>
+    <li>Выход годных кристаллов по каждой партии — с цветовой оценкой.</li>
+    <li>Таблица брака: сколько годных и в чём причина дефекта.</li>
+    <li>Склад: остатки материалов и предупреждение «мало», чтобы цех не встал.</li>
+  </ul>
+</section>
+
+<!-- 9 Чем лучше -->
+<section class="slide">
+  <div class="kicker">Наше преимущество</div>
+  <h2>«Универсальная кухня» против «точной лаборатории»</h2>
+  <ul>
+    <li>В обычной ERP пластины и yield нужно «прикручивать» отдельно.</li>
+    <li>В КРИСТАЛЛ это <b>основа</b> системы — заложено с самого начала.</li>
+    <li>Заточенность под микроэлектронику = меньше брака, выше выход годных.</li>
+  </ul>
+</section>
+
+<!-- 10 Что не успели -->
+<section class="slide">
+  <div class="kicker">Честно о границах</div>
+  <h2>Что не успели и планы</h2>
+  <div class="cols">
+    <div class="box">
+      <h3>Сделали</h3>
+      <ul>
+        <li>исследование и проблему</li>
+        <li>архитектуру из 6 модулей</li>
+        <li>рабочий прототип-демо</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>Дальше развивать</h3>
+      <ul>
+        <li>настоящие рецепты техпроцессов</li>
+        <li>подключение к оборудованию</li>
+        <li>аналитику дефектов по слоям</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 Вывод -->
+<section class="slide center">
+  <div class="kicker">Вывод</div>
+  <h2 style="max-width:20ch">Мы нашли реальный пробел и показали, как его закрыть</h2>
+  <p class="muted" style="max-width:30ch">Специализированная система помогает выпускать больше годных чипов и ускоряет импортозамещение.</p>
+</section>
+
+<!-- 12 Спасибо -->
+<section class="slide center">
+  <div class="logo">🔷</div>
+  <h1>Спасибо за внимание!</h1>
+  <p class="big">КРИСТАЛЛ — каждый кристалл под контролем</p>
+  <p class="muted" style="margin-top:24px">Готовы ответить на ваши вопросы</p>
+</section>
+
+<div class="counter"><span id="cur">1</span> / <span id="total">12</span></div>
+<div class="nav">
+  <button id="prev">‹</button>
+  <button id="next">›</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let i = 0;
+  document.getElementById('total').textContent = slides.length;
+  function show(n){
+    i = Math.max(0, Math.min(slides.length-1, n));
+    slides.forEach((s,k)=>s.classList.toggle('active', k===i));
+    document.getElementById('cur').textContent = i+1;
+    document.getElementById('prog').style.width = ((i+1)/slides.length*100)+'%';
+  }
+  document.getElementById('next').onclick = ()=>show(i+1);
+  document.getElementById('prev').onclick = ()=>show(i-1);
+  document.addEventListener('keydown', e=>{
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='PageDown') show(i+1);
+    if(e.key==='ArrowLeft'||e.key==='PageUp') show(i-1);
+    if(e.key==='Home') show(0);
+    if(e.key==='End') show(slides.length-1);
+  });
+  show(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>КРИСТАЛЛ — MES/ERP для производства микрочипов</title>
+<style>
+  :root{
+    --blue:#1E6FE0;
+    --teal:#22C7C7;
+    --dark:#0E1726;
+    --panel:#13203a;
+    --panel2:#1a2c4d;
+    --text:#e8eef9;
+    --muted:#9fb0cc;
+    --line:#243a63;
+    --green:#2ecc71;
+    --amber:#f5b942;
+    --red:#ff6b6b;
+    --shadow:0 6px 20px rgba(0,0,0,.25);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',Roboto,Arial,sans-serif;
+    background:linear-gradient(135deg,#0b1322,#0e1726);
+    color:var(--text);
+    min-height:100vh;
+  }
+  /* Шапка */
+  header{
+    display:flex;align-items:center;gap:14px;
+    padding:16px 24px;
+    background:linear-gradient(90deg,#10203f,#13203a);
+    border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:10;
+  }
+  .logo{font-size:30px;line-height:1}
+  .brand h1{font-size:22px;letter-spacing:1px;font-weight:700}
+  .brand .sub{font-size:12px;color:var(--muted);letter-spacing:.5px}
+  header .spacer{flex:1}
+  header .badge{
+    font-size:12px;color:var(--muted);
+    border:1px solid var(--line);border-radius:20px;padding:6px 12px;
+    white-space:nowrap;
+  }
+  /* Раскладка */
+  .layout{display:flex;min-height:calc(100vh - 65px)}
+  nav{
+    width:230px;flex-shrink:0;
+    background:var(--panel);border-right:1px solid var(--line);
+    padding:16px 10px;
+  }
+  nav a{
+    display:flex;align-items:center;gap:10px;
+    padding:12px 14px;margin-bottom:6px;border-radius:10px;
+    color:var(--muted);text-decoration:none;font-size:15px;cursor:pointer;
+    transition:all .15s;
+  }
+  nav a:hover{background:var(--panel2);color:var(--text)}
+  nav a.active{background:linear-gradient(90deg,var(--blue),#2a7ff0);color:#fff;font-weight:600;box-shadow:var(--shadow)}
+  nav a .ic{font-size:18px;width:22px;text-align:center}
+  main{flex:1;padding:24px;overflow-x:auto}
+  .view{display:none;animation:fade .25s ease}
+  .view.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2.title{font-size:24px;margin-bottom:4px}
+  p.lead{color:var(--muted);margin-bottom:20px;font-size:14px}
+  /* Карточки */
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:24px}
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px;box-shadow:var(--shadow);
+  }
+  .card .label{font-size:13px;color:var(--muted);margin-bottom:8px}
+  .card .value{font-size:30px;font-weight:700}
+  .card .value small{font-size:16px;color:var(--muted);font-weight:400}
+  .card .hint{font-size:12px;color:var(--teal);margin-top:6px}
+  .card.accent{background:linear-gradient(135deg,#163a6e,#1a2c4d)}
+  /* Панель/график */
+  .panel{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:18px;box-shadow:var(--shadow);margin-bottom:24px;
+  }
+  .panel h3{font-size:16px;margin-bottom:16px}
+  .chart{display:flex;align-items:flex-end;gap:18px;height:240px;padding:10px 6px 0}
+  .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+  .bar{
+    width:100%;max-width:54px;border-radius:8px 8px 0 0;
+    background:linear-gradient(180deg,var(--teal),var(--blue));
+    position:relative;transition:height .6s ease;
+  }
+  .bar .top{position:absolute;top:-22px;left:0;right:0;text-align:center;font-size:13px;font-weight:600}
+  .bar-wrap .lbl{margin-top:10px;font-size:12px;color:var(--muted);text-align:center}
+  /* Таблицы */
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+  tbody tr:hover{background:var(--panel2)}
+  .tag{display:inline-block;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600}
+  .tag.green{background:rgba(46,204,113,.15);color:var(--green)}
+  .tag.amber{background:rgba(245,185,66,.15);color:var(--amber)}
+  .tag.red{background:rgba(255,107,107,.15);color:var(--red)}
+  .tag.blue{background:rgba(30,111,224,.18);color:#7db2ff}
+  /* Прогресс-бар */
+  .progress{background:var(--panel2);border-radius:20px;height:18px;width:140px;overflow:hidden;display:inline-block;vertical-align:middle}
+  .progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:20px}
+  .pct{font-size:13px;color:var(--muted);margin-left:8px}
+  /* Yield bars */
+  .yield-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+  .yield-row .name{width:150px;font-size:14px;flex-shrink:0}
+  .yield-bar{flex:1;background:var(--panel2);border-radius:20px;height:24px;overflow:hidden;min-width:120px}
+  .yield-bar > span{display:block;height:100%;border-radius:20px;text-align:right;color:#06121f;font-size:12px;font-weight:700;line-height:24px;padding-right:8px}
+  footer{padding:16px 24px;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--line)}
+  /* Адаптивность */
+  @media (max-width:760px){
+    .layout{flex-direction:column}
+    nav{width:100%;display:flex;flex-wrap:wrap;gap:6px;border-right:none;border-bottom:1px solid var(--line)}
+    nav a{margin-bottom:0;flex:1 1 auto;justify-content:center;padding:10px}
+    nav a .ic{display:none}
+    .yield-row .name{width:110px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🔷</div>
+  <div class="brand">
+    <h1>КРИСТАЛЛ</h1>
+    <div class="sub">MES/ERP для производства микрочипов</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="badge">Завод «Зеленоград-1» · смена 2 · 13.06.2026</div>
+</header>
+
+<div class="layout">
+  <nav id="menu">
+    <a data-view="dashboard" class="active"><span class="ic">📊</span> Дашборд</a>
+    <a data-view="batches"><span class="ic">🟦</span> Партии пластин</a>
+    <a data-view="plan"><span class="ic">🗂️</span> План производства</a>
+    <a data-view="quality"><span class="ic">✅</span> Контроль качества</a>
+    <a data-view="stock"><span class="ic">📦</span> Склад</a>
+  </nav>
+
+  <main>
+    <!-- ДАШБОРД -->
+    <section id="dashboard" class="view active">
+      <h2 class="title">Дашборд</h2>
+      <p class="lead">Сводка по заводу в реальном времени</p>
+      <div class="cards">
+        <div class="card accent">
+          <div class="label">Заказов в работе</div>
+          <div class="value" id="c-orders">—</div>
+          <div class="hint">из плана на месяц</div>
+        </div>
+        <div class="card">
+          <div class="label">Партий пластин</div>
+          <div class="value" id="c-batches">—</div>
+          <div class="hint">в производстве сейчас</div>
+        </div>
+        <div class="card">
+          <div class="label">Средний выход годных</div>
+          <div class="value" id="c-yield">—<small>%</small></div>
+          <div class="hint">по активным партиям</div>
+        </div>
+        <div class="card">
+          <div class="label">Загрузка оборудования</div>
+          <div class="value" id="c-load">—<small>%</small></div>
+          <div class="hint">средняя по линиям</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Выход годных по типам чипов, %</h3>
+        <div class="chart" id="chart"></div>
+      </div>
+    </section>
+
+    <!-- ПАРТИИ ПЛАСТИН -->
+    <section id="batches" class="view">
+      <h2 class="title">Партии пластин</h2>
+      <p class="lead">Учёт и отслеживание каждой партии кремниевых пластин (wafer)</p>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr><th>№ партии</th><th>Тип чипа</th><th>Пластин</th><th>Этап</th><th>Статус</th><th>Дата запуска</th></tr>
+          </thead>
+          <tbody id="t-batches"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ПЛАН ПРОИЗВОДСТВА -->
+    <section id="plan" class="view">
+      <h2 class="title">План производства</h2>
+      <p class="lead">Заказы и прогресс их выполнения</p>
+      <div class="panel">
+        <table>
+          <thead>
+            <tr><th>Заказ</th><th>Заказчик</th><th>Тип чипа</th><th>Кол-во, шт</th><th>Срок</th><th>Прогресс</th></tr>
+          </thead>
+          <tbody id="t-plan"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- КОНТРОЛЬ КАЧЕСТВА -->
+    <section id="quality" class="view">
+      <h2 class="title">Контроль качества</h2>
+      <p class="lead">Выход годных кристаллов (yield) по партиям — главная метрика завода</p>
+      <div class="panel">
+        <h3>Выход годных по партиям</h3>
+        <div id="yield-list"></div>
+      </div>
+      <div class="panel">
+        <table>
+          <thead><tr><th>№ партии</th><th>Тип чипа</th><th>Годных</th><th>Брак, причина</th><th>Оценка</th></tr></thead>
+          <tbody id="t-quality"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- СКЛАД -->
+    <section id="stock" class="view">
+      <h2 class="title">Склад материалов</h2>
+      <p class="lead">Остатки расходных материалов для производства</p>
+      <div class="panel">
+        <table>
+          <thead><tr><th>Материал</th><th>Остаток</th><th>Мин. запас</th><th>Статус</th></tr></thead>
+          <tbody id="t-stock"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>КРИСТАЛЛ — школьный проект-концепция · данные демонстрационные · работает без интернета</footer>
+
+<script>
+/* ====== ДАННЫЕ (демо) ====== */
+const batches = [
+  {id:'W-2401', chip:'Микроконтроллер К1', wafers:25, stage:'Фотолитография', status:'В работе',     date:'10.06.2026', yield:92, total:6200, reject:'пыль на слое 3'},
+  {id:'W-2402', chip:'Память М2',          wafers:25, stage:'Травление',       status:'В работе',     date:'10.06.2026', yield:88, total:5800, reject:'недотрав слоя 5'},
+  {id:'W-2403', chip:'Датчик S3',          wafers:18, stage:'Легирование',     status:'В работе',     date:'11.06.2026', yield:95, total:4100, reject:'край пластины'},
+  {id:'W-2404', chip:'Микроконтроллер К1', wafers:25, stage:'Тестирование',    status:'Контроль',     date:'08.06.2026', yield:90, total:6200, reject:'разброс параметров'},
+  {id:'W-2405', chip:'Силовой чип P4',     wafers:20, stage:'Нанесение слоёв', status:'В работе',     date:'12.06.2026', yield:84, total:3200, reject:'дефект маски'},
+  {id:'W-2406', chip:'Память М2',          wafers:25, stage:'Готово',          status:'Завершена',    date:'05.06.2026', yield:93, total:5800, reject:'—'},
+  {id:'W-2407', chip:'Датчик S3',          wafers:18, stage:'Очистка',         status:'Запущена',     date:'13.06.2026', yield:0,  total:4100, reject:'—'},
+  {id:'W-2408', chip:'Силовой чип P4',     wafers:20, stage:'Фотолитография',  status:'Остановлена',  date:'09.06.2026', yield:71, total:3200, reject:'сбой установки'},
+];
+
+const orders = [
+  {id:'ORD-501', client:'РЖД-Электроника', chip:'Микроконтроллер К1', qty:120000, due:'25.06.2026', progress:74},
+  {id:'ORD-502', client:'БанкКарта РФ',     chip:'Память М2',          qty:90000,  due:'30.06.2026', progress:55},
+  {id:'ORD-503', client:'АвтоВАЗ-Чип',      chip:'Датчик S3',          qty:60000,  due:'02.07.2026', progress:40},
+  {id:'ORD-504', client:'ЭнергоСети',       chip:'Силовой чип P4',     qty:45000,  due:'10.07.2026', progress:22},
+  {id:'ORD-505', client:'МедТех',           chip:'Датчик S3',          qty:30000,  due:'15.07.2026', progress:8},
+];
+
+const stock = [
+  {name:'Кремниевые пластины (200 мм)', qty:420, unit:'шт', min:150},
+  {name:'Фоторезист',                   qty:38,  unit:'л',  min:40},
+  {name:'Технологические газы',         qty:12,  unit:'баллонов', min:8},
+  {name:'Травильная химия',             qty:95,  unit:'л',  min:30},
+  {name:'Газ аргон',                    qty:6,   unit:'баллонов', min:10},
+  {name:'Полировальная паста',          qty:55,  unit:'кг', min:20},
+];
+
+/* ====== СТАТУСЫ ====== */
+function statusTag(s){
+  const map={'В работе':'blue','Контроль':'amber','Завершена':'green','Запущена':'blue','Остановлена':'red'};
+  return `<span class="tag ${map[s]||'blue'}">${s}</span>`;
+}
+function yieldColor(y){ return y>=90?'var(--green)': y>=80?'var(--amber)':'var(--red)'; }
+function yieldRate(y){ return y>=90?'отлично': y>=80?'норма':'низкий'; }
+
+/* ====== РЕНДЕР ТАБЛИЦ ====== */
+function renderBatches(){
+  document.getElementById('t-batches').innerHTML = batches.map(b=>`
+    <tr><td><b>${b.id}</b></td><td>${b.chip}</td><td>${b.wafers}</td><td>${b.stage}</td><td>${statusTag(b.status)}</td><td>${b.date}</td></tr>
+  `).join('');
+}
+function renderPlan(){
+  document.getElementById('t-plan').innerHTML = orders.map(o=>`
+    <tr><td><b>${o.id}</b></td><td>${o.client}</td><td>${o.chip}</td><td>${o.qty.toLocaleString('ru-RU')}</td><td>${o.due}</td>
+    <td><div class="progress"><span style="width:${o.progress}%"></span></div><span class="pct">${o.progress}%</span></td></tr>
+  `).join('');
+}
+function renderQuality(){
+  const active = batches.filter(b=>b.yield>0);
+  document.getElementById('yield-list').innerHTML = active.map(b=>`
+    <div class="yield-row">
+      <div class="name"><b>${b.id}</b></div>
+      <div class="yield-bar"><span style="width:${b.yield}%;background:${yieldColor(b.yield)}">${b.yield}%</span></div>
+    </div>`).join('');
+  document.getElementById('t-quality').innerHTML = active.map(b=>{
+    const good = Math.round(b.total*b.yield/100);
+    return `<tr><td><b>${b.id}</b></td><td>${b.chip}</td><td>${good.toLocaleString('ru-RU')} / ${b.total.toLocaleString('ru-RU')}</td>
+    <td>${b.reject}</td><td><span class="tag ${b.yield>=90?'green':b.yield>=80?'amber':'red'}">${yieldRate(b.yield)}</span></td></tr>`;
+  }).join('');
+}
+function renderStock(){
+  document.getElementById('t-stock').innerHTML = stock.map(s=>{
+    const low = s.qty < s.min;
+    return `<tr><td>${s.name}</td><td><b>${s.qty}</b> ${s.unit}</td><td>${s.min} ${s.unit}</td>
+    <td><span class="tag ${low?'red':'green'}">${low?'мало':'норма'}</span></td></tr>`;
+  }).join('');
+}
+
+/* ====== ДАШБОРД (считается из данных) ====== */
+function renderDashboard(){
+  const activeBatches = batches.filter(b=>b.status!=='Завершена');
+  const yields = batches.filter(b=>b.yield>0).map(b=>b.yield);
+  const avgYield = Math.round(yields.reduce((a,b)=>a+b,0)/yields.length);
+  // загрузка оборудования: доля партий, реально находящихся в работе
+  const working = batches.filter(b=>b.status==='В работе'||b.status==='Контроль').length;
+  const load = Math.round(working / batches.length * 100);
+
+  document.getElementById('c-orders').textContent = orders.length;
+  document.getElementById('c-batches').textContent = activeBatches.length;
+  document.getElementById('c-yield').innerHTML = avgYield + '<small>%</small>';
+  document.getElementById('c-load').innerHTML = load + '<small>%</small>';
+
+  // График: средний выход годных по типам чипов (из данных партий)
+  const byChip = {};
+  batches.filter(b=>b.yield>0).forEach(b=>{
+    (byChip[b.chip] = byChip[b.chip] || []).push(b.yield);
+  });
+  const chartData = Object.keys(byChip).map(chip=>({
+    chip, val: Math.round(byChip[chip].reduce((a,b)=>a+b,0)/byChip[chip].length)
+  }));
+  const max = Math.max(...chartData.map(d=>d.val));
+  document.getElementById('chart').innerHTML = chartData.map(d=>`
+    <div class="bar-wrap" title="${d.chip}: ${d.val}%">
+      <div class="bar" style="height:${Math.round(d.val/max*100)}%">
+        <div class="top">${d.val}%</div>
+      </div>
+      <div class="lbl">${d.chip}</div>
+    </div>`).join('');
+}
+
+/* ====== НАВИГАЦИЯ ====== */
+document.querySelectorAll('#menu a').forEach(a=>{
+  a.addEventListener('click', ()=>{
+    document.querySelectorAll('#menu a').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    a.classList.add('active');
+    document.getElementById(a.dataset.view).classList.add('active');
+  });
+});
+
+/* ====== ЗАПУСК ====== */
+renderDashboard();
+renderBatches();
+renderPlan();
+renderQuality();
+renderStock();
+</script>
+</body>
+</html>
