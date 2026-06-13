@@ -180,6 +180,14 @@
   .log-item .u{color:var(--violet);font-weight:600;white-space:nowrap}
   @media (max-width:760px){.profile-grid{grid-template-columns:1fr}}
 
+  /* модалка демо */
+  .modal-bg{display:none;position:fixed;inset:0;z-index:50;background:rgba(27,32,48,.45);backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px}
+  .modal-bg.open{display:flex}
+  .modal{background:var(--solid);border-radius:20px;padding:26px;max-width:620px;width:100%;box-shadow:var(--shadow);max-height:88vh;overflow:auto}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .demo-steps{margin:0;padding-left:22px}
+  .demo-steps li{margin-bottom:12px;font-size:14px;line-height:1.5}
+  .demo-steps code{background:var(--bg2);padding:2px 7px;border-radius:6px;font-size:13px;color:var(--violet)}
   footer{padding:14px 24px;color:var(--muted);font-size:12px;text-align:center;border-top:1px solid var(--line)}
   @media (max-width:760px){
     .layout{flex-direction:column}
@@ -215,6 +223,7 @@
     <div class="logo-badge">🔷</div>
     <div class="brand"><h1 class="grad-text">КРИСТАЛЛ</h1><div class="sub">Завод «Зеленоград-1» · 13.06.2026</div></div>
     <div class="spacer"></div>
+    <button class="btn ghost sm" id="helpBtn" title="Как провести демонстрацию">❓ Демо-сценарий</button>
     <div class="bell" id="bell" title="Тревоги">🔔<span class="badge" id="bellBadge" style="display:none">0</span></div>
     <div class="userbox">
       <div class="who"><div class="nm" id="hdrName">—</div><div class="rl" id="hdrRole">—</div></div>
@@ -372,6 +381,26 @@
     </main>
   </div>
   <footer>КРИСТАЛЛ — школьный проект-концепция · данные демонстрационные · работает без интернета</footer>
+
+  <!-- модалка демо-сценария -->
+  <div id="helpModal" class="modal-bg">
+    <div class="modal">
+      <div class="modal-head">
+        <h3 style="margin:0">🎬 Как провести демонстрацию жюри</h3>
+        <button class="iconbtn" id="helpClose">✕</button>
+      </div>
+      <p class="lead" style="margin:0 0 14px">Сценарий на 2–3 минуты — показывает все сильные стороны системы.</p>
+      <ol class="demo-steps">
+        <li><b>Войдите как технолог</b> (<code>engineer / 1234</code>) → раздел <b>«Рецепты»</b> → испортите любой параметр у «Силовой чип P4» (выставьте вне нормы). Рецепт станет «заблокирован».</li>
+        <li>Перейдите в <b>«Партии пластин»</b> → выберите «Силовой чип P4» → «Запустить партию». Система <b>заблокирует запуск</b> — это защита от брака.</li>
+        <li>Выйдите и <b>войдите как администратор</b> (<code>admin / admin</code>). Покажите, что ему доступны все разделы и список пользователей.</li>
+        <li>На <b>дашборде</b> нажмите <b>«▶ Запустить смену»</b> — завод оживает: партии идут по этапам, графики и цифры меняются в реальном времени, всплывают тревоги в 🔔.</li>
+        <li>Откройте <b>«Контроль качества» → «Карта пластины»</b> — выберите партию, покажите сетку годных и бракованных кристаллов.</li>
+        <li>Загляните в <b>«Личный кабинет»</b> → журнал действий: видно, кто и что делал в системе.</li>
+      </ol>
+      <p class="lead" style="margin:14px 0 0">💡 Все изменения можно вернуть кнопкой «Сбросить демо-данные» в личном кабинете.</p>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -835,6 +864,10 @@ document.getElementById('simBtn').onclick=toggleSim;
 document.getElementById('wmSelect').onchange=renderWafer;
 document.getElementById('bell').onclick=()=>{ if(role().views.includes('dashboard')) switchView('dashboard'); };
 document.getElementById('resetDemo').onclick=()=>{ if(confirm('Сбросить все изменения к демо-данным?')) resetData(); };
+const helpModal=document.getElementById('helpModal');
+document.getElementById('helpBtn').onclick=()=>helpModal.classList.add('open');
+document.getElementById('helpClose').onclick=()=>helpModal.classList.remove('open');
+helpModal.onclick=e=>{ if(e.target===helpModal) helpModal.classList.remove('open'); };
 try{const s=JSON.parse(localStorage.getItem(SKEY));if(s&&ROLES[s.role]){session=s;enterApp();}}catch(e){}
 </script>
 </body>
